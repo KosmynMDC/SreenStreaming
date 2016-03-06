@@ -22,7 +22,7 @@ public class ImageSender {
     public static int MAX_PACKETS = 255;
     public static int SESSION_START = 128;
     public static int SESSION_END = 64;
-    public static int DATAGRAM_MAX_SIZE = 65507 - HEADER_SIZE;
+
     public static int MAX_SESSION_NUMBER = 255;
 
     /*
@@ -30,19 +30,15 @@ public class ImageSender {
      * size of 65535 minus 20 bytes for the IP header and 8 bytes for the UDP
      * header.
      */
-
-
+    public static int DATAGRAM_MAX_SIZE = 65507 - HEADER_SIZE;
 
     /* Default parameters */
-    public static double SCALING = 0.5;
-    public static int SLEEP_MILLIS = 2000;
-    public static boolean SHOW_MOUSEPOINTER = true;
+    public static double scalingFactor = Config.DEFAULT_SCALING_FACTOR;
+    public static int sleepMillis = Config.DEFAULT_SLEEP_MILLIS;
+    public static boolean showMousePointer = true;
     private static String ipAddress = Config.DEFAULT_IP_ADDRESS;
     private static int port = Config.DEFAULT_PORT;
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         ImageSender sender = new ImageSender();
         int sessionNumber = 0;
@@ -56,19 +52,7 @@ public class ImageSender {
         frame.setVisible(true);
 
 
-		/* Handle command line arguments */
-        switch (args.length) {
-            case 5:
-                ipAddress = args[4];
-            case 4:
-                port = Integer.parseInt(args[3]);
-            case 3:
-                SHOW_MOUSEPOINTER = Integer.parseInt(args[2]) == 1 ? true : false;
-            case 2:
-                SLEEP_MILLIS = Integer.parseInt(args[1]) * 1000;
-            case 1:
-                SCALING = Double.parseDouble(args[0]);
-        }
+        handleArgs(args);
 
         label.setText("Multicasting screenshots...");
 
@@ -82,7 +66,7 @@ public class ImageSender {
                 image = Config.getScreenshot();
 
 					/* Draw mousepointer into image */
-                if (SHOW_MOUSEPOINTER) {
+                if (showMousePointer) {
                     PointerInfo p = MouseInfo.getPointerInfo();
                     int mouseX = p.getLocation().x;
                     int mouseY = p.getLocation().y;
@@ -106,18 +90,18 @@ public class ImageSender {
 
 
 				/* Scale image */
-                image = Config.shrinkBufferedImage(image, SCALING);
+                image = Config.shrinkBufferedImage(image, scalingFactor);
                 byte[] imageByteArray = Config.bufferedImageToByteArray(image);
-                int packets = (int) Math.ceil(imageByteArray.length / (float) DATAGRAM_MAX_SIZE);
+                int noOfPackets = (int) Math.ceil(imageByteArray.length / (float) DATAGRAM_MAX_SIZE);
 
 				/* If image has more than MAX_PACKETS slices -> error */
-                if (packets > MAX_PACKETS) {
+                if (noOfPackets > MAX_PACKETS) {
                     System.out.println("Image is too large to be transmitted!");
                     continue;
                 }
 
 				/* Loop through slices */
-                for (int i = 0; i <= packets; i++) {
+                for (int i = 0; i <= noOfPackets; i++) {
                     int flags = 0;
                     flags = i == 0 ? flags | SESSION_START : flags;
                     flags = (i + 1) * DATAGRAM_MAX_SIZE > imageByteArray.length ? flags | SESSION_END : flags;
@@ -128,7 +112,7 @@ public class ImageSender {
                     byte[] data = new byte[HEADER_SIZE + size];
                     data[0] = (byte) flags;
                     data[1] = (byte) sessionNumber;
-                    data[2] = (byte) packets;
+                    data[2] = (byte) noOfPackets;
                     data[3] = (byte) (DATAGRAM_MAX_SIZE >> 8);
                     data[4] = (byte) DATAGRAM_MAX_SIZE;
                     data[5] = (byte) i;
@@ -137,20 +121,38 @@ public class ImageSender {
 
 					/* Copy current slice to byte array */
                     System.arraycopy(imageByteArray, i * DATAGRAM_MAX_SIZE, data, HEADER_SIZE, size);
-					/* Send multicast packet */
+                    /* Send multicast packet */
                     sender.sendImage(data, ipAddress, port);
 
 					/* Leave loop if last slice has been sent */
                     if ((flags & SESSION_END) == SESSION_END) break;
                 }
-				/* Sleep */
-                Thread.sleep(SLEEP_MILLIS);
+                /* Sleep */
+                Thread.sleep(sleepMillis);
 
 				/* Increase session number */
                 sessionNumber = sessionNumber < MAX_SESSION_NUMBER ? ++sessionNumber : 0;
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handle command line arguments
+     */
+    private static void handleArgs(String[] args) {
+        switch (args.length) {
+            case 5:
+                ipAddress = args[4];
+            case 4:
+                port = Integer.parseInt(args[3]);
+            case 3:
+                showMousePointer = Integer.parseInt(args[2]) == 1 ? true : false;
+            case 2:
+                sleepMillis = Integer.parseInt(args[1]) * 1000;
+            case 1:
+                scalingFactor = Double.parseDouble(args[0]);
         }
     }
 
@@ -164,39 +166,38 @@ public class ImageSender {
      * @param port             Port
      * @return <code>true</code> on success otherwise <code>false</code>
      */
-    private boolean sendImage(byte[] imageData, String multicastAddress,
-                              int port) {
-        InetAddress ia;
+    private boolean sendImage(byte[] imageData, String multicastAddress, int port) {
+        InetAddress inetAddress;
 
-        boolean ret = false;
+        boolean result = false;
         int ttl = 2;
 
         try {
-            ia = InetAddress.getByName(multicastAddress);
+            inetAddress = InetAddress.getByName(multicastAddress);
         } catch (UnknownHostException e) {
             e.printStackTrace();
-            return ret;
+            return result;
         }
 
-        MulticastSocket ms = null;
+        MulticastSocket socket = null;
 
         try {
-            ms = new MulticastSocket();
-            ms.setTimeToLive(ttl);
+            socket = new MulticastSocket();
+            socket.setTimeToLive(ttl);
             DatagramPacket dp = new DatagramPacket(imageData, imageData.length,
-                    ia, port);
-            ms.send(dp);
-            ret = true;
+                    inetAddress, port);
+            socket.send(dp);
+            result = true;
         } catch (IOException e) {
             e.printStackTrace();
-            ret = false;
+            result = false;
         } finally {
-            if (ms != null) {
-                ms.close();
+            if (socket != null) {
+                socket.close();
             }
         }
 
-        return ret;
+        return result;
     }
 
 }

@@ -16,7 +16,9 @@ public abstract class Config {
     public static final String DEFAULT_IP_ADDRESS = "225.4.5.6";
     public static final int DEFAULT_PORT = 4444;
 
-    public static String IMAGE_OUTPUT_FORMAT = "jpg";
+    public static final String IMAGE_OUTPUT_FORMAT = "jpg";
+    public static final double DEFAULT_SCALING_FACTOR = 0.5;
+    public static final int DEFAULT_SLEEP_MILLIS = 2000;
 
     /**
      * Takes a screenshot (fullscreen)
