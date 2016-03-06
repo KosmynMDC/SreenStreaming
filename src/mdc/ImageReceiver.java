@@ -19,12 +19,6 @@ import java.net.MulticastSocket;
  * @author Jochen Luell
  */
 public class ImageReceiver {
-    /* Flags and sizes */
-    public static int HEADER_SIZE = 8;
-
-    public static int SESSION_START = 128;
-
-    public static int SESSION_END = 64;
 
     /*
      * The absolute maximum datagram packet size is 65507, The maximum IP packet
@@ -37,16 +31,18 @@ public class ImageReceiver {
     private static String ipAddress = Config.DEFAULT_IP_ADDRESS;
     private static int port = Config.DEFAULT_PORT;
 
+    /* Ui Frame */
     JFrame frame;
-
+    JWindow fullscreenWindow;
     boolean fullscreen = false;
-
-    JWindow fullscreenWindow = null;
+    JLabel labelImage;
+    JLabel windowImage;
 
     public static void main(String[] args) {
         handleArgs(args);
 
         ImageReceiver receiver = new ImageReceiver();
+        receiver.createUiFrame();
         receiver.receiveImages(ipAddress, port);
     }
 
@@ -63,21 +59,13 @@ public class ImageReceiver {
     }
 
     /**
-     * Revceive method
-     *
-     * @param multicastAddress IP multicast adress
-     * @param port             Port
+     * Create Ui Frame.
      */
-    private void receiveImages(String multicastAddress, int port) {
-        boolean debug = true;
+    private void createUiFrame() {
+        labelImage = new JLabel();
+        windowImage = new JLabel();
 
-        InetAddress inetAddress = null;
-        MulticastSocket socket = null;
-
-		/* Constuct frame */
-        JLabel labelImage = new JLabel();
-        JLabel windowImage = new JLabel();
-
+        /* Create frame */
         frame = new JFrame("Multicast Image Receiver");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(labelImage);
@@ -89,6 +77,19 @@ public class ImageReceiver {
         fullscreenWindow = new JWindow();
         fullscreenWindow.getContentPane().add(windowImage);
         fullscreenWindow.addKeyListener(new FrameKeyListener());
+    }
+
+    /**
+     * Revceive method
+     *
+     * @param multicastAddress IP multicast adress
+     * @param port             Port
+     */
+    private void receiveImages(String multicastAddress, int port) {
+        boolean debug = true;
+
+        InetAddress inetAddress = null;
+        MulticastSocket socket = null;
 
         try {
             /* Get address */
@@ -130,9 +131,9 @@ public class ImageReceiver {
                 if (debug) {
                     System.out.println("------------- PACKET -------------");
                     System.out.println("SESSION_START = "
-                            + ((data[0] & SESSION_START) == SESSION_START));
+                            + ((data[0] & Config.SESSION_START) == Config.SESSION_START));
                     System.out.println("SSESSION_END = "
-                            + ((data[0] & SESSION_END) == SESSION_END));
+                            + ((data[0] & Config.SESSION_END) == Config.SESSION_END));
                     System.out.println("SESSION NR = " + session);
                     System.out.println("SLICES = " + slices);
                     System.out.println("MAX PACKET SIZE = " + maxPacketSize);
@@ -142,7 +143,7 @@ public class ImageReceiver {
                 }
 
 				/* If SESSION_START falg is set, setup start values */
-                if ((data[0] & SESSION_START) == SESSION_START) {
+                if ((data[0] & Config.SESSION_START) == Config.SESSION_START) {
                     if (session != currentSession) {
                         currentSession = session;
                         slicesStored = 0;
@@ -157,7 +158,7 @@ public class ImageReceiver {
                 if (sessionAvailable && session == currentSession) {
                     if (slicesCol != null && slicesCol[slice] == 0) {
                         slicesCol[slice] = 1;
-                        System.arraycopy(data, HEADER_SIZE, imageData, slice
+                        System.arraycopy(data, Config.HEADER_SIZE, imageData, slice
                                 * maxPacketSize, size);
                         slicesStored++;
                     }
@@ -191,7 +192,6 @@ public class ImageReceiver {
             }
         }
     }
-
 
     private class FrameKeyListener implements KeyListener {
 

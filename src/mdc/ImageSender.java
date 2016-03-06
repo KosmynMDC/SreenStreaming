@@ -18,11 +18,8 @@ import java.net.UnknownHostException;
 public class ImageSender {
 
     /* Flags and sizes */
-    public static int HEADER_SIZE = 8;
-    public static int MAX_PACKETS = 255;
-    public static int SESSION_START = 128;
-    public static int SESSION_END = 64;
 
+    public static int MAX_PACKETS = 255;
     public static int MAX_SESSION_NUMBER = 255;
 
     /*
@@ -30,7 +27,7 @@ public class ImageSender {
      * size of 65535 minus 20 bytes for the IP header and 8 bytes for the UDP
      * header.
      */
-    public static int DATAGRAM_MAX_SIZE = 65507 - HEADER_SIZE;
+    public static int DATAGRAM_MAX_SIZE = 65507 - Config.HEADER_SIZE;
 
     /* Default parameters */
     public static double scalingFactor = Config.DEFAULT_SCALING_FACTOR;
@@ -39,102 +36,88 @@ public class ImageSender {
     private static String ipAddress = Config.DEFAULT_IP_ADDRESS;
     private static int port = Config.DEFAULT_PORT;
 
-    public static void main(String[] args) {
-        ImageSender sender = new ImageSender();
-        int sessionNumber = 0;
-
-
+    /**
+     * Create Ui Frame.
+     */
+    private static void createUiFrame() {
         // Create Frame
         JFrame frame = new JFrame("Multicast Image Sender");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         JLabel label = new JLabel();
-        frame.getContentPane().add(label);
-        frame.setVisible(true);
-
-
-        handleArgs(args);
-
         label.setText("Multicasting screenshots...");
 
+        frame.getContentPane().add(label);
+        frame.setVisible(true);
         frame.pack();
+    }
 
-        try {
+    public static void main(String[] args) throws IOException, AWTException, InterruptedException {
+        handleArgs(args);
+        createUiFrame();
+
+        ImageSender sender = new ImageSender();
+        int sessionNumber = 0;
+
             /* Continuously send images */
-            while (true) {
-                BufferedImage image;
+        while (true) {
+            BufferedImage image;
 
-                image = Config.getScreenshot();
+            image = Config.getScreenshot();
 
-					/* Draw mousepointer into image */
-                if (showMousePointer) {
-                    PointerInfo p = MouseInfo.getPointerInfo();
-                    int mouseX = p.getLocation().x;
-                    int mouseY = p.getLocation().y;
-
-                    Graphics2D g2d = image.createGraphics();
-                    g2d.setColor(Color.red);
-                    Polygon polygon1 = new Polygon(new int[]{mouseX, mouseX + 10, mouseX, mouseX},
-                            new int[]{mouseY, mouseY + 10, mouseY + 15, mouseY}
-                            , 4);
-
-                    Polygon polygon2 = new Polygon(new int[]{mouseX + 1, mouseX + 10 + 1, mouseX + 1, mouseX + 1},
-                            new int[]{mouseY + 1, mouseY + 10 + 1, mouseY + 15 + 1, mouseY + 1}
-                            , 4);
-                    g2d.setColor(Color.black);
-                    g2d.fill(polygon1);
-
-                    g2d.setColor(Color.red);
-                    g2d.fill(polygon2);
-                    g2d.dispose();
-                }
-
-
-				/* Scale image */
-                image = Config.shrinkBufferedImage(image, scalingFactor);
-                byte[] imageByteArray = Config.bufferedImageToByteArray(image);
-                int noOfPackets = (int) Math.ceil(imageByteArray.length / (float) DATAGRAM_MAX_SIZE);
-
-				/* If image has more than MAX_PACKETS slices -> error */
-                if (noOfPackets > MAX_PACKETS) {
-                    System.out.println("Image is too large to be transmitted!");
-                    continue;
-                }
-
-				/* Loop through slices */
-                for (int i = 0; i <= noOfPackets; i++) {
-                    int flags = 0;
-                    flags = i == 0 ? flags | SESSION_START : flags;
-                    flags = (i + 1) * DATAGRAM_MAX_SIZE > imageByteArray.length ? flags | SESSION_END : flags;
-
-                    int size = (flags & SESSION_END) != SESSION_END ? DATAGRAM_MAX_SIZE : imageByteArray.length - i * DATAGRAM_MAX_SIZE;
-
-					/* Set additional header */
-                    byte[] data = new byte[HEADER_SIZE + size];
-                    data[0] = (byte) flags;
-                    data[1] = (byte) sessionNumber;
-                    data[2] = (byte) noOfPackets;
-                    data[3] = (byte) (DATAGRAM_MAX_SIZE >> 8);
-                    data[4] = (byte) DATAGRAM_MAX_SIZE;
-                    data[5] = (byte) i;
-                    data[6] = (byte) (size >> 8);
-                    data[7] = (byte) size;
-
-					/* Copy current slice to byte array */
-                    System.arraycopy(imageByteArray, i * DATAGRAM_MAX_SIZE, data, HEADER_SIZE, size);
-                    /* Send multicast packet */
-                    sender.sendImage(data, ipAddress, port);
-
-					/* Leave loop if last slice has been sent */
-                    if ((flags & SESSION_END) == SESSION_END) break;
-                }
-                /* Sleep */
-                Thread.sleep(sleepMillis);
-
-				/* Increase session number */
-                sessionNumber = sessionNumber < MAX_SESSION_NUMBER ? ++sessionNumber : 0;
+			/* Draw mousepointer into image */
+            if (showMousePointer) {
+               Config.drawMousePointer(image);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+			/* Scale image */
+            image = Config.shrinkBufferedImage(image, scalingFactor);
+            byte[] imageByteArray = Config.bufferedImageToByteArray(image);
+            int noOfPackets = (int) Math.ceil(imageByteArray.length / (float) DATAGRAM_MAX_SIZE);
+
+			/* If image has more than MAX_PACKETS slices -> error */
+            if (noOfPackets > MAX_PACKETS) {
+                System.out.println("Image is too large to be transmitted!");
+                continue;
+            }
+
+			/* Loop through slices */
+            for (int i = 0; i <= noOfPackets; i++) {
+                int flags = 0;
+
+                // Add start session flag
+                flags = i == 0 ? flags | Config.SESSION_START : flags;
+                // Add end session flag
+                flags = (i + 1) * DATAGRAM_MAX_SIZE > imageByteArray.length ? flags | Config.SESSION_END : flags;
+
+                int size = (flags & Config.SESSION_END) != Config.SESSION_END ? DATAGRAM_MAX_SIZE : imageByteArray.length - i * DATAGRAM_MAX_SIZE;
+
+				/* Set additional header */
+                byte[] data = new byte[Config.HEADER_SIZE + size];
+                data[0] = (byte) flags;
+                data[1] = (byte) sessionNumber;
+                data[2] = (byte) noOfPackets;
+                data[3] = (byte) (DATAGRAM_MAX_SIZE >> 8);
+                data[4] = (byte) DATAGRAM_MAX_SIZE;
+                data[5] = (byte) i;
+                data[6] = (byte) (size >> 8);
+                data[7] = (byte) size;
+
+				/* Copy current slice to byte array */
+                System.arraycopy(imageByteArray, i * DATAGRAM_MAX_SIZE, data, Config.HEADER_SIZE, size);
+
+
+                /* Send multicast packet */
+                sender.sendImage(data, ipAddress, port);
+
+				/* Leave loop if last slice has been sent */
+                if ((flags & Config.SESSION_END) == Config.SESSION_END) break;
+            }
+            /* Sleep */
+            Thread.sleep(sleepMillis);
+
+			/* Increase session number */
+            sessionNumber = sessionNumber < MAX_SESSION_NUMBER ? ++sessionNumber : 0;
         }
     }
 
