@@ -20,9 +20,9 @@ import javax.swing.JWindow;
 /**
  * Multicast Image Receiver
  * Version: 0.1
- * 
+ *
  * @author Jochen Luell
- * 
+ *
  */
 public class ImageReceiver implements KeyListener {
 	/* Flags and sizes */
@@ -40,9 +40,8 @@ public class ImageReceiver implements KeyListener {
 	private static int DATAGRAM_MAX_SIZE = 65507;
 
 	/* Default values */
-	public static String IP_ADDRESS = "225.4.5.6";
-
-	public static int PORT = 4444;
+    private static String ipAddress = Config.DEFAULT_IP_ADDRESS;
+    private static int port = Config.DEFAULT_PORT;
 
 	JFrame frame;
 
@@ -52,7 +51,7 @@ public class ImageReceiver implements KeyListener {
 
 	/**
 	 * Revceive method
-	 * 
+	 *
 	 * @param multicastAddress
 	 *            IP multicast adress
 	 * @param port
@@ -190,18 +189,18 @@ public class ImageReceiver implements KeyListener {
 		/* Handle command line arguments */
 		switch (args.length) {
 		case 2:
-			IP_ADDRESS = args[1];
+			ipAddress = args[1];
 		case 1:
-			PORT = Integer.parseInt(args[0]);
+			port = Integer.parseInt(args[0]);
 		}
 
 		ImageReceiver receiver = new ImageReceiver();
-		receiver.receiveImages(IP_ADDRESS, PORT);
+		receiver.receiveImages(ipAddress, port);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
 	 */
 	public void keyPressed(KeyEvent keyevent) {
