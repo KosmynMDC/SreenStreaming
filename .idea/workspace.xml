@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fe46531e-18cb-4222-9ecc-8c15f3ec182a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/ProiectJava/mdc/ImageSender.class" afterPath="$PROJECT_DIR$/out/production/ProiectJava/mdc/ImageSender.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mdc/Config.java" afterPath="$PROJECT_DIR$/src/mdc/Config.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mdc/ImageReceiver.java" afterPath="$PROJECT_DIR$/src/mdc/ImageReceiver.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mdc/ImageSender.java" afterPath="$PROJECT_DIR$/src/mdc/ImageSender.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ProiectJava.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -33,21 +34,23 @@
       <file leaf-file-name="ImageReceiver.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mdc/ImageReceiver.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1086" max-vertical-offset="4104">
-              <caret line="33" column="18" selection-start-line="33" selection-start-column="18" selection-end-line="33" selection-end-column="18" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="702" max-vertical-offset="3762">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="method#main#0;class#ImageReceiver#0" expanded="false" />
                 <element signature="method#handleArgs#0;class#ImageReceiver#0" expanded="false" />
+                <element signature="method#createUiFrame#0;class#ImageReceiver#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Config.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Config.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/mdc/Config.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="684" max-vertical-offset="2196">
-              <caret line="93" column="0" selection-start-line="93" selection-start-column="0" selection-end-line="93" selection-end-column="0" />
+            <state vertical-scroll-proportion="5.225806" vertical-offset="162" max-vertical-offset="2340">
+              <caret line="27" column="7" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="7" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -55,13 +58,15 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ImageSender.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ImageSender.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mdc/ImageSender.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5" vertical-offset="327" max-vertical-offset="3438">
-              <caret line="29" column="39" selection-start-line="29" selection-start-column="22" selection-end-line="29" selection-end-column="39" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="540" max-vertical-offset="3150">
+              <caret line="25" column="54" selection-start-line="25" selection-start-column="54" selection-end-line="25" selection-end-column="54" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="method#handleArgs#0;class#ImageSender#0" expanded="false" />
+                <element signature="method#createUiFrame#0;class#ImageSender#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -81,8 +86,8 @@
         <option value="$PROJECT_DIR$/src/Util.java" />
         <option value="$PROJECT_DIR$/src/Server.java" />
         <option value="$PROJECT_DIR$/src/mdc/ImageReceiver.java" />
-        <option value="$PROJECT_DIR$/src/mdc/Config.java" />
         <option value="$PROJECT_DIR$/src/mdc/ImageSender.java" />
+        <option value="$PROJECT_DIR$/src/mdc/Config.java" />
       </list>
     </option>
   </component>
@@ -183,7 +188,7 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.ImageReceiver">
+  <component name="RunManager" selected="Application.ImageSender">
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -453,7 +458,7 @@
       <updated>1457271999661</updated>
       <workItem from="1457272001904" duration="9278000" />
       <workItem from="1457295623602" duration="914000" />
-      <workItem from="1457384698789" duration="295000" />
+      <workItem from="1457384698789" duration="2667000" />
     </task>
     <task id="LOCAL-00001" summary="Add Config util from sender">
       <created>1457293701738</created>
@@ -467,29 +472,35 @@
       <option name="project" value="LOCAL" />
       <updated>1457294071148</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Another">
+      <created>1457385327616</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1457385327616</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10487000" />
+    <option name="totallyTimeSpent" value="12859000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1366" height="741" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.85714287" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.8566828" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32850242" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32850242" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32850242" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32850242" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32850242" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -551,7 +562,8 @@
       <TodoPanelSettings />
     </option>
     <MESSAGE value="Add Config util from sender" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add Config util from sender" />
+    <MESSAGE value="Another" />
+    <option name="LAST_COMMIT_MESSAGE" value="Another" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -575,7 +587,9 @@
           <caret line="91" column="38" selection-start-line="91" selection-start-column="38" selection-end-line="91" selection-end-column="38" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#main#0;class#ImageReceiver#0" expanded="false" />
             <element signature="method#handleArgs#0;class#ImageReceiver#0" expanded="false" />
+            <element signature="method#createUiFrame#0;class#ImageReceiver#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -596,6 +610,8 @@
           <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#handleArgs#0;class#ImageSender#0" expanded="false" />
+            <element signature="method#createUiFrame#0;class#ImageSender#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -606,7 +622,9 @@
           <caret line="39" column="17" selection-start-line="39" selection-start-column="17" selection-end-line="39" selection-end-column="17" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#main#0;class#ImageReceiver#0" expanded="false" />
             <element signature="method#handleArgs#0;class#ImageReceiver#0" expanded="false" />
+            <element signature="method#createUiFrame#0;class#ImageReceiver#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -627,6 +645,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#handleArgs#0;class#ImageSender#0" expanded="false" />
+            <element signature="method#createUiFrame#0;class#ImageSender#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -653,31 +673,35 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mdc/Config.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="684" max-vertical-offset="2196">
-          <caret line="93" column="0" selection-start-line="93" selection-start-column="0" selection-end-line="93" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/mdc/ImageReceiver.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="600" max-vertical-offset="4104">
-          <caret line="33" column="18" selection-start-line="33" selection-start-column="18" selection-end-line="33" selection-end-column="18" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="702" max-vertical-offset="3762">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#main#0;class#ImageReceiver#0" expanded="false" />
             <element signature="method#handleArgs#0;class#ImageReceiver#0" expanded="false" />
+            <element signature="method#createUiFrame#0;class#ImageReceiver#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/mdc/ImageSender.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5" vertical-offset="327" max-vertical-offset="3438">
-          <caret line="29" column="39" selection-start-line="29" selection-start-column="22" selection-end-line="29" selection-end-column="39" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="216" max-vertical-offset="3150">
+          <caret line="25" column="54" selection-start-line="25" selection-start-column="54" selection-end-line="25" selection-end-column="54" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#handleArgs#0;class#ImageSender#0" expanded="false" />
+            <element signature="method#createUiFrame#0;class#ImageSender#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mdc/Config.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="5.225806" vertical-offset="162" max-vertical-offset="2340">
+          <caret line="27" column="7" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="7" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

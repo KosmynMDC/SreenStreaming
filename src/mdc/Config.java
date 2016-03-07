@@ -18,7 +18,7 @@ public abstract class Config {
 
     public static final String IMAGE_OUTPUT_FORMAT = "jpg";
     public static final double DEFAULT_SCALING_FACTOR = 0.5;
-    public static final int DEFAULT_SLEEP_MILLIS = 2000;
+    public static final int DEFAULT_SLEEP_MILLIS = 1000 / 60;
 
     // Protocol
     /*
@@ -40,8 +40,7 @@ public abstract class Config {
      * @throws com.sun.image.codec.jpeg.ImageFormatException
      * @throws java.io.IOException
      */
-    public static BufferedImage getScreenshot() throws AWTException,
-            ImageFormatException, IOException {
+    public static BufferedImage getScreenshot() throws AWTException, ImageFormatException, IOException {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension screenSize = toolkit.getScreenSize();
         Rectangle screenRect = new Rectangle(screenSize);

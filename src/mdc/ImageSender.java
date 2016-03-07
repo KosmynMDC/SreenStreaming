@@ -17,8 +17,7 @@ import java.net.UnknownHostException;
  */
 public class ImageSender {
 
-    /* Flags and sizes */
-
+    /* Sizes */
     public static int MAX_PACKETS = 255;
     public static int MAX_SESSION_NUMBER = 255;
 
@@ -30,9 +29,40 @@ public class ImageSender {
     private static int port = Config.DEFAULT_PORT;
 
     /**
+     * MAIN
+     *
+     * @param args
+     */
+    public static void main(String[] args) throws IOException, AWTException, InterruptedException {
+        handleArgs(args);
+
+        ImageSender sender = new ImageSender();
+        sender.createUiFrame();
+        sender.start();
+    }
+
+    /**
+     * Handle command line arguments
+     */
+    private static void handleArgs(String[] args) {
+        switch (args.length) {
+            case 5:
+                ipAddress = args[4];
+            case 4:
+                port = Integer.parseInt(args[3]);
+            case 3:
+                showMousePointer = Integer.parseInt(args[2]) == 1 ? true : false;
+            case 2:
+                sleepMillis = Integer.parseInt(args[1]) * 1000;
+            case 1:
+                scalingFactor = Double.parseDouble(args[0]);
+        }
+    }
+
+    /**
      * Create Ui Frame.
      */
-    private static void createUiFrame() {
+    private void createUiFrame() {
         // Create Frame
         JFrame frame = new JFrame("Multicast Image Sender");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,17 +75,21 @@ public class ImageSender {
         frame.pack();
     }
 
-    public static void main(String[] args) throws IOException, AWTException, InterruptedException {
-        handleArgs(args);
-        createUiFrame();
-
-        ImageSender sender = new ImageSender();
+    /**
+     * Gets screenshots and sends them.
+     *
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws AWTException
+     */
+    private void start() throws InterruptedException, IOException, AWTException {
         int sessionNumber = 0;
 
-            /* Continuously send images */
+        /* Continuously send images */
         while (true) {
             BufferedImage image;
 
+            /* Takes a screenshot */
             image = Config.getScreenshot();
 
 			/* Draw mousepointer into image */
@@ -101,7 +135,7 @@ public class ImageSender {
 
 
                 /* Send multicast packet */
-                sender.sendImage(data, ipAddress, port);
+                sendMessage(data, ipAddress, port);
 
 				/* Leave loop if last slice has been sent */
                 if ((flags & Config.SESSION_END) == Config.SESSION_END) break;
@@ -115,24 +149,6 @@ public class ImageSender {
     }
 
     /**
-     * Handle command line arguments
-     */
-    private static void handleArgs(String[] args) {
-        switch (args.length) {
-            case 5:
-                ipAddress = args[4];
-            case 4:
-                port = Integer.parseInt(args[3]);
-            case 3:
-                showMousePointer = Integer.parseInt(args[2]) == 1 ? true : false;
-            case 2:
-                sleepMillis = Integer.parseInt(args[1]) * 1000;
-            case 1:
-                scalingFactor = Double.parseDouble(args[0]);
-        }
-    }
-
-    /**
      * Sends a byte array via multicast
      * Multicast addresses are IP addresses in the range of 224.0.0.0 to
      * 239.255.255.255.
@@ -142,7 +158,7 @@ public class ImageSender {
      * @param port             Port
      * @return <code>true</code> on success otherwise <code>false</code>
      */
-    private boolean sendImage(byte[] imageData, String multicastAddress, int port) {
+    private boolean sendMessage(byte[] imageData, String multicastAddress, int port) {
         InetAddress inetAddress;
 
         boolean result = false;
@@ -175,5 +191,4 @@ public class ImageSender {
 
         return result;
     }
-
 }
