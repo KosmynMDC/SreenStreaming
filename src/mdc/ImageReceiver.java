@@ -15,17 +15,10 @@ import java.net.MulticastSocket;
 /**
  * Multicast Image Receiver
  * Version: 0.1
- *
- * @author Jochen Luell
+ * <p/>
+ * Created by cosmin on 06.03.2016.
  */
 public class ImageReceiver {
-
-    /*
-     * The absolute maximum datagram packet size is 65507, The maximum IP packet
-     * size of 65535 minus 20 bytes for the IP header and 8 bytes for the UDP
-     * header.
-     */
-    private static int DATAGRAM_MAX_SIZE = 65507;
 
     /* Default values */
     private static String ipAddress = Config.DEFAULT_IP_ADDRESS;
@@ -106,7 +99,7 @@ public class ImageReceiver {
             boolean sessionAvailable = false;
 
 			/* Setup byte array to store data received */
-            byte[] buffer = new byte[DATAGRAM_MAX_SIZE];
+            byte[] buffer = new byte[Config.DATAGRAM_PACKET_DATA_MAX_SIZE];
 
 			/* Receiving loop */
             while (true) {

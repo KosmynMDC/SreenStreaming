@@ -12,8 +12,8 @@ import java.net.UnknownHostException;
 /**
  * Multicast Image Sender
  * Version: 0.1
- *
- * @author Jochen Luell
+ * <p/>
+ * Created by cosmin on 06.03.2016.
  */
 public class ImageSender {
 
@@ -21,13 +21,6 @@ public class ImageSender {
 
     public static int MAX_PACKETS = 255;
     public static int MAX_SESSION_NUMBER = 255;
-
-    /*
-     * The absolute maximum datagram packet size is 65507, The maximum IP packet
-     * size of 65535 minus 20 bytes for the IP header and 8 bytes for the UDP
-     * header.
-     */
-    public static int DATAGRAM_MAX_SIZE = 65507 - Config.HEADER_SIZE;
 
     /* Default parameters */
     public static double scalingFactor = Config.DEFAULT_SCALING_FACTOR;
@@ -67,13 +60,13 @@ public class ImageSender {
 
 			/* Draw mousepointer into image */
             if (showMousePointer) {
-               Config.drawMousePointer(image);
+                Config.drawMousePointer(image);
             }
 
 			/* Scale image */
             image = Config.shrinkBufferedImage(image, scalingFactor);
             byte[] imageByteArray = Config.bufferedImageToByteArray(image);
-            int noOfPackets = (int) Math.ceil(imageByteArray.length / (float) DATAGRAM_MAX_SIZE);
+            int noOfPackets = (int) Math.ceil(imageByteArray.length / (float) Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE);
 
 			/* If image has more than MAX_PACKETS slices -> error */
             if (noOfPackets > MAX_PACKETS) {
@@ -88,23 +81,23 @@ public class ImageSender {
                 // Add start session flag
                 flags = i == 0 ? flags | Config.SESSION_START : flags;
                 // Add end session flag
-                flags = (i + 1) * DATAGRAM_MAX_SIZE > imageByteArray.length ? flags | Config.SESSION_END : flags;
+                flags = (i + 1) * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE > imageByteArray.length ? flags | Config.SESSION_END : flags;
 
-                int size = (flags & Config.SESSION_END) != Config.SESSION_END ? DATAGRAM_MAX_SIZE : imageByteArray.length - i * DATAGRAM_MAX_SIZE;
+                int size = (flags & Config.SESSION_END) != Config.SESSION_END ? Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE : imageByteArray.length - i * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE;
 
 				/* Set additional header */
                 byte[] data = new byte[Config.HEADER_SIZE + size];
                 data[0] = (byte) flags;
                 data[1] = (byte) sessionNumber;
                 data[2] = (byte) noOfPackets;
-                data[3] = (byte) (DATAGRAM_MAX_SIZE >> 8);
-                data[4] = (byte) DATAGRAM_MAX_SIZE;
+                data[3] = (byte) (Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE >> 8);
+                data[4] = (byte) Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE;
                 data[5] = (byte) i;
                 data[6] = (byte) (size >> 8);
                 data[7] = (byte) size;
 
 				/* Copy current slice to byte array */
-                System.arraycopy(imageByteArray, i * DATAGRAM_MAX_SIZE, data, Config.HEADER_SIZE, size);
+                System.arraycopy(imageByteArray, i * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE, data, Config.HEADER_SIZE, size);
 
 
                 /* Send multicast packet */

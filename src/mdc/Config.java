@@ -21,9 +21,16 @@ public abstract class Config {
     public static final int DEFAULT_SLEEP_MILLIS = 2000;
 
     // Protocol
+    /*
+     * The absolute maximum datagram packet size is 65507, The maximum IP packet
+     * size of 65535 minus 20 bytes for the IP header and 8 bytes for the UDP
+     * header.
+     */
+    public static int DATAGRAM_PACKET_DATA_MAX_SIZE = 65507;
     public static int SESSION_START = 128;
     public static int SESSION_END = 64;
     public static int HEADER_SIZE = 8;
+    public static int DATAGRAM_PACKET_IMAGE_DATA_SIZE = DATAGRAM_PACKET_DATA_MAX_SIZE - Config.HEADER_SIZE;
 
     /**
      * Takes a screenshot (fullscreen)
@@ -91,6 +98,8 @@ public abstract class Config {
 
     /**
      * Draws mouse pointer into the image.
+     *
+     * @param image the image
      */
     public static void drawMousePointer(BufferedImage image) {
         PointerInfo p = MouseInfo.getPointerInfo();
