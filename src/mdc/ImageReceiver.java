@@ -122,12 +122,7 @@ public class ImageReceiver {
      * @throws IOException
      */
     private void receiveImages(MulticastSocket socket) throws IOException, AWTException {
-        BufferedImage testImage = Config.getScreenshot();
-        Graphics2D g = testImage.createGraphics();
-        g.setColor(Color.BLUE);
-        g.fillRect(0, 0, testImage.getWidth(), testImage.getHeight());
-        g.dispose();
-        byte[] imageData = Config.bufferedImageToByteArray(testImage);
+        byte[] imageData = null;
 
 		/* Setup byte array to store data received */
         byte[] buffer = new byte[Config.DATAGRAM_PACKET_DATA_MAX_SIZE];
@@ -152,6 +147,10 @@ public class ImageReceiver {
                 System.out.println("SLICE INDEX START = " + sliceIndexStart);
                 System.out.println("SLICE SIZE = " + sliceSize);
                 System.out.println("------------- PACKET -------------\n");
+            }
+
+            if (imageData == null) {
+                imageData = new byte[entireWidth * entireHeight];
             }
 
 			/* If package belongs to current session */
