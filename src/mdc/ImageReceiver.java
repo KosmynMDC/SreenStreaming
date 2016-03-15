@@ -140,21 +140,23 @@ public class ImageReceiver {
             byte[] data = dp.getData();
 
 			/* Read header infomation */
-            int maxPacketSize = (int) ((data[0] & 0xff) << 8 | (data[1] & 0xff)); // mask the sign bit
-            short slice = (short) (data[2] & 0xff);
-            int size = (int) ((data[3] & 0xff) << 8 | (data[4] & 0xff)); // mask the sign bit
+            int entireWidth = (int) ((data[0] & 0xff) << 8 | (data[1] & 0xff)); // mask the sign bit
+            int entireHeight = (int) ((data[2] & 0xff) << 8 | (data[3] & 0xff)); // mask the sign bit
+            short sliceIndexStart = (short) (data[4] & 0xff);
+            int sliceSize = (int) ((data[5] & 0xff) << 8 | (data[6] & 0xff)); // mask the sign bit
 
             if (debug) {
                 System.out.println("------------- PACKET -------------");
-                System.out.println("MAX PACKET SIZE = " + maxPacketSize);
-                System.out.println("SLICE NR = " + slice);
-                System.out.println("SIZE = " + size);
+                System.out.println("ENTIRE WIDTH = " + entireWidth);
+                System.out.println("ENTIRE HEIGHT = " + entireHeight);
+                System.out.println("SLICE INDEX START = " + sliceIndexStart);
+                System.out.println("SLICE SIZE = " + sliceSize);
                 System.out.println("------------- PACKET -------------\n");
             }
 
 			/* If package belongs to current session */
-            System.arraycopy(data, Config.HEADER_SIZE, imageData, slice
-                    * maxPacketSize, size);
+            System.arraycopy(data, Config.HEADER_SIZE, imageData, sliceIndexStart
+                    * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE, sliceSize);
 
 			/* If image is complete display it */
             ByteArrayInputStream bis = new ByteArrayInputStream(imageData);

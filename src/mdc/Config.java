@@ -27,7 +27,7 @@ public abstract class Config {
      * header.
      */
     public static int DATAGRAM_PACKET_DATA_MAX_SIZE = 65507;
-    public static int HEADER_SIZE = 5;
+    public static int HEADER_SIZE = 7;
     public static int DATAGRAM_PACKET_IMAGE_DATA_SIZE = DATAGRAM_PACKET_DATA_MAX_SIZE - Config.HEADER_SIZE;
 
     /**
@@ -120,6 +120,9 @@ public abstract class Config {
         g2d.dispose();
     }
 
+    /**
+     * Compares two bytes array.
+     */
     public static boolean compareImages(int start, int end, byte[] oldImage, byte[] newImage) throws IOException {
         if (oldImage == null) {
             return true;
