@@ -17,7 +17,7 @@ public abstract class Config {
     public static final int DEFAULT_PORT = 4444;
 
     public static final String IMAGE_OUTPUT_FORMAT = "jpg";
-    public static final double DEFAULT_SCALING_FACTOR = 0.2;
+    public static final double DEFAULT_SCALING_FACTOR = 0.6;
     public static final int DEFAULT_SLEEP_MILLIS = 1000 / 30;
 
     // Protocol
