@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.Arrays;
 
 /**
  * Multicast Image Receiver
@@ -19,6 +20,7 @@ import java.net.MulticastSocket;
  * Created by cosmin on 06.03.2016.
  */
 public class ImageReceiver {
+    public static double scalingFactor = Config.DEFAULT_SCALING_FACTOR;
 
     /* Default values */
     private static String ipAddress = Config.DEFAULT_IP_ADDRESS;
@@ -37,7 +39,7 @@ public class ImageReceiver {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws AWTException {
         handleArgs(args);
 
         ImageReceiver receiver = new ImageReceiver();
@@ -84,7 +86,7 @@ public class ImageReceiver {
      * @param multicastAddress IP multicast adress
      * @param port             Port
      */
-    private void start(String multicastAddress, int port) {
+    private void start(String multicastAddress, int port) throws AWTException {
         InetAddress inetAddress = null;
         MulticastSocket socket = null;
 
@@ -119,12 +121,13 @@ public class ImageReceiver {
      * @param socket
      * @throws IOException
      */
-    private void receiveImages(MulticastSocket socket) throws IOException {
-        int currentSession = -1;
-        int slicesStored = 0;
-        int[] slicesCol = null;
-        byte[] imageData = null;
-        boolean sessionAvailable = false;
+    private void receiveImages(MulticastSocket socket) throws IOException, AWTException {
+        BufferedImage testImage = Config.getScreenshot();
+        Graphics2D g = testImage.createGraphics();
+        g.setColor(Color.BLUE);
+        g.fillRect(0, 0, testImage.getWidth(), testImage.getHeight());
+        g.dispose();
+        byte[] imageData = Config.bufferedImageToByteArray(testImage);
 
 		/* Setup byte array to store data received */
         byte[] buffer = new byte[Config.DATAGRAM_PACKET_DATA_MAX_SIZE];
@@ -137,62 +140,29 @@ public class ImageReceiver {
             byte[] data = dp.getData();
 
 			/* Read header infomation */
-            short session = (short) (data[1] & 0xff);
-            short slices = (short) (data[2] & 0xff);
-            int maxPacketSize = (int) ((data[3] & 0xff) << 8 | (data[4] & 0xff)); // mask the sign bit
-            short slice = (short) (data[5] & 0xff);
-            int size = (int) ((data[6] & 0xff) << 8 | (data[7] & 0xff)); // mask the sign bit
+            int maxPacketSize = (int) ((data[0] & 0xff) << 8 | (data[1] & 0xff)); // mask the sign bit
+            short slice = (short) (data[2] & 0xff);
+            int size = (int) ((data[3] & 0xff) << 8 | (data[4] & 0xff)); // mask the sign bit
 
             if (debug) {
                 System.out.println("------------- PACKET -------------");
-                System.out.println("SESSION_START = "
-                        + ((data[0] & Config.SESSION_START) == Config.SESSION_START));
-                System.out.println("SSESSION_END = "
-                        + ((data[0] & Config.SESSION_END) == Config.SESSION_END));
-                System.out.println("SESSION NR = " + session);
-                System.out.println("SLICES = " + slices);
                 System.out.println("MAX PACKET SIZE = " + maxPacketSize);
                 System.out.println("SLICE NR = " + slice);
                 System.out.println("SIZE = " + size);
                 System.out.println("------------- PACKET -------------\n");
             }
 
-			/* If SESSION_START flag is set, setup start values */
-            if ((data[0] & Config.SESSION_START) == Config.SESSION_START) {
-                if (session != currentSession) {
-                    currentSession = session;
-                    slicesStored = 0;
-
-                    /* Construct a appropreatly sized byte array */
-                    imageData = new byte[slices * maxPacketSize];
-                    slicesCol = new int[slices];
-                    sessionAvailable = true;
-                }
-            }
-
 			/* If package belongs to current session */
-            if (sessionAvailable && session == currentSession) {
-                if (slicesCol != null && slicesCol[slice] == 0) {
-                    slicesCol[slice] = 1;
-                    System.arraycopy(data, Config.HEADER_SIZE, imageData, slice
-                            * maxPacketSize, size);
-                    slicesStored++;
-                }
-            }
+            System.arraycopy(data, Config.HEADER_SIZE, imageData, slice
+                    * maxPacketSize, size);
 
 			/* If image is complete display it */
-            if (slicesStored == slices) {
-                ByteArrayInputStream bis = new ByteArrayInputStream(imageData);
-                BufferedImage image = ImageIO.read(bis);
-                labelImage.setIcon(new ImageIcon(image));
-                windowImage.setIcon(new ImageIcon(image));
+            ByteArrayInputStream bis = new ByteArrayInputStream(imageData);
+            BufferedImage image = ImageIO.read(bis);
+            labelImage.setIcon(new ImageIcon(image));
+            windowImage.setIcon(new ImageIcon(image));
 
-                frame.pack();
-            }
-
-            if (debug) {
-                System.out.println("STORED SLICES: " + slicesStored);
-            }
+            frame.pack();
         }
     }
 

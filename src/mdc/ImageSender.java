@@ -19,7 +19,6 @@ public class ImageSender {
 
     /* Sizes */
     public static int MAX_PACKETS = 255;
-    public static int MAX_SESSION_NUMBER = 255;
 
     /* Default parameters */
     public static double scalingFactor = Config.DEFAULT_SCALING_FACTOR;
@@ -83,14 +82,13 @@ public class ImageSender {
      * @throws AWTException
      */
     private void start() throws InterruptedException, IOException, AWTException {
-        int sessionNumber = 0;
+        byte[] imageByteArray = null, oldImageByteArray;
 
         /* Continuously send images */
         while (true) {
-            BufferedImage image;
 
-            /* Takes a screenshot */
-            image = Config.getScreenshot();
+            /* Takes a screenshot */;
+            BufferedImage image = Config.getScreenshot();
 
 			/* Draw mousepointer into image */
             if (showMousePointer) {
@@ -99,7 +97,8 @@ public class ImageSender {
 
 			/* Scale image */
             image = Config.shrinkBufferedImage(image, scalingFactor);
-            byte[] imageByteArray = Config.bufferedImageToByteArray(image);
+            oldImageByteArray = imageByteArray;
+            imageByteArray = Config.bufferedImageToByteArray(image);
             int noOfPackets = (int) Math.ceil(imageByteArray.length / (float) Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE);
 
 			/* If image has more than MAX_PACKETS slices -> error */
@@ -109,42 +108,39 @@ public class ImageSender {
             }
 
 			/* Loop through slices */
-            for (int i = 0; i <= noOfPackets; i++) {
-                int flags = 0;
+            for (int packetIndex = 0; packetIndex < noOfPackets; packetIndex++) {
+                boolean hasChanges = Config.compareImages(packetIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE,
+                        packetIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE + Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE,
+                        oldImageByteArray, imageByteArray);
+                if (!hasChanges) {
+                    continue;
+                }
 
-                // Add start session flag
-                flags = i == 0 ? flags | Config.SESSION_START : flags;
-                // Add end session flag
-                flags = (i + 1) * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE > imageByteArray.length ? flags | Config.SESSION_END : flags;
-
-                int size = (flags & Config.SESSION_END) != Config.SESSION_END ? Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE : imageByteArray.length - i * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE;
+                int size = packetIndex == noOfPackets ? Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE : imageByteArray.length - packetIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE;
 
 				/* Set additional header */
                 byte[] data = new byte[Config.HEADER_SIZE + size];
-                data[0] = (byte) flags;
-                data[1] = (byte) sessionNumber;
-                data[2] = (byte) noOfPackets;
-                data[3] = (byte) (Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE >> 8);
-                data[4] = (byte) Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE;
-                data[5] = (byte) i;
-                data[6] = (byte) (size >> 8);
-                data[7] = (byte) size;
+                data[0] = (byte) (Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE >> 8);
+                data[1] = (byte) Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE;
+                data[2] = (byte) packetIndex;
+                data[3] = (byte) (size >> 8);
+                data[4] = (byte) size;
+
+                System.out.println("------------- PACKET -------------");
+                System.out.println("MAX PACKET SIZE = " + Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE);
+                System.out.println("SLICE NR = " + packetIndex);
+                System.out.println("SIZE = " + size);
+                System.out.println("------------- PACKET -------------\n");
 
 				/* Copy current slice to byte array */
-                System.arraycopy(imageByteArray, i * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE, data, Config.HEADER_SIZE, size);
-
+                System.arraycopy(imageByteArray, packetIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE, data, Config.HEADER_SIZE, size);
 
                 /* Send multicast packet */
                 sendMessage(data, ipAddress, port);
 
-				/* Leave loop if last slice has been sent */
-                if ((flags & Config.SESSION_END) == Config.SESSION_END) break;
             }
             /* Sleep */
             Thread.sleep(sleepMillis);
-
-			/* Increase session number */
-            sessionNumber = sessionNumber < MAX_SESSION_NUMBER ? ++sessionNumber : 0;
         }
     }
 

@@ -17,8 +17,8 @@ public abstract class Config {
     public static final int DEFAULT_PORT = 4444;
 
     public static final String IMAGE_OUTPUT_FORMAT = "jpg";
-    public static final double DEFAULT_SCALING_FACTOR = 0.5;
-    public static final int DEFAULT_SLEEP_MILLIS = 1000 / 60;
+    public static final double DEFAULT_SCALING_FACTOR = 0.2;
+    public static final int DEFAULT_SLEEP_MILLIS = 1000 / 30;
 
     // Protocol
     /*
@@ -27,9 +27,7 @@ public abstract class Config {
      * header.
      */
     public static int DATAGRAM_PACKET_DATA_MAX_SIZE = 65507;
-    public static int SESSION_START = 128;
-    public static int SESSION_END = 64;
-    public static int HEADER_SIZE = 8;
+    public static int HEADER_SIZE = 5;
     public static int DATAGRAM_PACKET_IMAGE_DATA_SIZE = DATAGRAM_PACKET_DATA_MAX_SIZE - Config.HEADER_SIZE;
 
     /**
@@ -120,5 +118,18 @@ public abstract class Config {
         g2d.setColor(Color.red);
         g2d.fill(polygon2);
         g2d.dispose();
+    }
+
+    public static boolean compareImages(int start, int end, byte[] oldImage, byte[] newImage) throws IOException {
+        if (oldImage == null) {
+            return true;
+        }
+
+        for (int index = start; index < oldImage.length && index < newImage.length && index < end; index++) {
+            if (oldImage[index] != newImage[index]) {
+                return false;
+            }
+        }
+        return true;
     }
 }
