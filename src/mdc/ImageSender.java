@@ -100,44 +100,44 @@ public class ImageSender {
             image = Config.shrinkBufferedImage(image, scalingFactor);
             oldImageByteArray = imageByteArray;
             imageByteArray = Config.bufferedImageToByteArray(image);
-            int noOfPackets = (int) Math.ceil(imageByteArray.length / (float) Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE);
+            int noOfSlices = (int) Math.ceil(imageByteArray.length / (float) Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE);
 
 			/* If image has more than MAX_PACKETS slices -> error */
-            if (noOfPackets > MAX_PACKETS) {
+            if (noOfSlices > MAX_PACKETS) {
                 System.out.println("Image is too large to be transmitted!");
                 continue;
             }
 
 			/* Loop through slices */
-            for (int sliceIndex = 0; sliceIndex < noOfPackets; sliceIndex++) {
-                boolean hasChanges = Config.compareImages(sliceIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE,
+            for (int sliceIndex = 0; sliceIndex < noOfSlices; sliceIndex++) {
+                boolean noChanges = Config.sameImagesSlice(sliceIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE,
                         sliceIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE + Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE,
                         oldImageByteArray, imageByteArray);
-                if (!hasChanges) {
+                if (noChanges) {
                     continue;
                 }
 
-                int size = sliceIndex == noOfPackets ? Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE : imageByteArray.length - sliceIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE;
+                int sliceSize = sliceIndex < noOfSlices - 1 ? Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE : imageByteArray.length - sliceIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE;
 
 				/* Set additional header */
-                byte[] data = new byte[Config.HEADER_SIZE + size];
+                byte[] data = new byte[Config.HEADER_SIZE + sliceSize];
                 data[0] = (byte) (image.getWidth() >> 8);
                 data[1] = (byte) image.getWidth();
                 data[2] = (byte) (image.getHeight() >> 8);
                 data[3] = (byte) image.getHeight();
                 data[4] = (byte) sliceIndex;
-                data[5] = (byte) (size >> 8);
-                data[6] = (byte) size;
+                data[5] = (byte) (sliceSize >> 8);
+                data[6] = (byte) sliceSize;
 
                 System.out.println("------------- PACKET -------------");
                 System.out.println("ENTIRE WIDTH = " + image.getWidth());
                 System.out.println("ENTIRE HEIGHT = " + image.getHeight());
                 System.out.println("SLICE INDEX START = " + sliceIndex);
-                System.out.println("SLICE SIZE = " + size);
+                System.out.println("SLICE SIZE = " + sliceSize);
                 System.out.println("------------- PACKET -------------\n");
 
 				/* Copy current slice to byte array */
-                System.arraycopy(imageByteArray, sliceIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE, data, Config.HEADER_SIZE, size);
+                System.arraycopy(imageByteArray, sliceIndex * Config.DATAGRAM_PACKET_IMAGE_DATA_SIZE, data, Config.HEADER_SIZE, sliceSize);
 
                 /* Send multicast packet */
                 sendMessage(data, ipAddress, port);
